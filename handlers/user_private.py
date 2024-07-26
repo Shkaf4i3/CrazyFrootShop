@@ -77,7 +77,7 @@ async def app_balance(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Balance_state.amount)
     await callback.answer()
     await callback.message.answer(
-        'Введите сумму USDT, на которую желаете пополнить баланс \n'
+        'Введите сумму RUB, на которую желаете пополнить баланс \n'
         'Оплата производится через CryptoBot',
         reply_markup=kb.backup_main_kb()
     )
@@ -85,14 +85,22 @@ async def app_balance(callback: CallbackQuery, state: FSMContext):
 
 @user_private_router.message(Balance_state.amount, F.text)
 async def create_order(message: Message, state: FSMContext):
-    await state.update_data(amount=message.text)
-    data = await state.get_data()
-    amount = data['amount']
-    order = await cryptobot.create_invoice(amount=amount, currency_type='crypto', asset='USDT')
-    await state.update_data(check_amount=order.invoice_id)
+    try:
+        await state.update_data(amount=int(message.text))
+        data = await state.get_data()
+        amount = data['amount']
+        order = await cryptobot.create_invoice(amount=amount,
+                                            currency_type='fiat',
+                                            asset='USDT',
+                                            fiat='RUB')
+        await state.update_data(check_amount=order.invoice_id)
 
-    await message.answer('Перейдите по ссылке, чтобы произвести оплату \n'
-                         f'{order.pay_url}', reply_markup=kb.check_order())
+        await message.answer('Перейдите по ссылке, чтобы произвести оплату \n'
+                            f'{order.pay_url}', reply_markup=kb.check_order())
+    except ValueError:
+        await message.answer('Вы ввели не число, попробуйте снова',
+                             reply_markup=kb.main_kb())
+        await state.clear()
 
 
 @user_private_router.callback_query(F.data == 'check_invoice')
