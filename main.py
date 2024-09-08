@@ -1,5 +1,5 @@
-import asyncio
-import logging
+from asyncio import run
+from logging import basicConfig, INFO
 from os import getenv
 from dotenv import load_dotenv
 
@@ -32,9 +32,13 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-
-    logging.basicConfig(level=logging.INFO)
+    basicConfig(
+        level=INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+        format="[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s",
+        )
+    
     try:
-        asyncio.run(main(), loop_factory=None)
+        run(main(), loop_factory=None)
     except KeyboardInterrupt:
         print('Exit')

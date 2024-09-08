@@ -68,12 +68,11 @@ async def call_add_sc_owner(message: Message, state: FSMContext):
         await message.answer(
             '🔐 Товар успешно добавлен в таблицу 🔐',
             reply_markup=kb.admin_panel())
-        await state.clear()
     else:
         await message.answer(
             '❌ Такой товар уже есть в базе ❌',
             reply_markup=kb.admin_panel())
-        await state.clear()
+    await state.clear()
 
 
 @admin_private_router.callback_query(F.data == 'add_epic_games')
@@ -99,9 +98,8 @@ async def call_add_eg_owner(message: Message, state: FSMContext):
         await message.answer(
             '🔐 Товар успешно добавлен в таблицу 🔐',
             reply_markup=kb.admin_panel())
-        await state.clear()
     else:
         await message.answer(
             '❌ Такой товар уже есть в базе ❌',
             reply_markup=kb.admin_panel())
-        await state.clear()
+    await state.clear()
