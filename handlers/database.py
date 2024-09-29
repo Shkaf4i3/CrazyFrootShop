@@ -1,17 +1,16 @@
-from os import getenv
-from dotenv import load_dotenv
 from psqlpy import ConnectionPool, QueryResult
 from psqlpy.extra_types import BigInt
 
 from aiogram.types import CallbackQuery
 
+from handlers.config_reader import config
 
-load_dotenv()
-db_pool = ConnectionPool(password=getenv('password'),
-                         db_name=getenv('dbname'),
-                         username=getenv('user'),
-                         host=getenv('host'),
-                         port=5432,
+
+db_pool = ConnectionPool(password=config.password,
+                         db_name=config.dbname,
+                         username=config.user,
+                         host=config.host,
+                         port=config.port,
                          max_db_pool_size=5)
 
 

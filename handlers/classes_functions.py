@@ -1,7 +1,5 @@
 from AsyncPayments.cryptoBot import AsyncCryptoBot
 from cachetools import TTLCache
-from os import getenv
-from dotenv import load_dotenv
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram.filters import Filter
@@ -11,18 +9,18 @@ from aiogram import BaseMiddleware
 from aiogram.fsm.context import FSMContext
 
 from handlers.database import app_balance
+from handlers.config_reader import config
 import reply as kb
 
 
-load_dotenv()
-cryptobot = AsyncCryptoBot(token=getenv('pay_key'))
+cryptobot = AsyncCryptoBot(token=config.pay_key)
 
 
 # Проверка пользователя на наличие в списке admin_id для доступа к админским командам и запросам
 class IsAdmin(Filter):
     @staticmethod
     async def __call__(message: Message):
-        return str(message.from_user.id) in getenv('admin_id')
+        return str(message.from_user.id) in config.admin_id
 
 
 # Классы для работы через FSM
@@ -47,7 +45,7 @@ class CheckSubscribe(BaseMiddleware):
                        event: Message,
                        data: Dict[str, Any]) -> Any:
         chat_members = await event.bot.get_chat_member(
-            chat_id=getenv('channel_id'),
+            chat_id=config.channel_id,
             user_id=event.from_user.id)
 
         if chat_members.status == 'left':

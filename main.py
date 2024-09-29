@@ -1,7 +1,5 @@
 from asyncio import run
 from logging import basicConfig, INFO
-from os import getenv
-from dotenv import load_dotenv
 
 from aiogram import Dispatcher, Bot
 from aiogram.types import BotCommandScopeAllPrivateChats
@@ -13,13 +11,12 @@ from handlers.admin_private import admin_private_router
 from cmd_list import private
 from handlers.database import create_table
 from handlers.classes_functions import CheckSubscribe, AntiFloodMiddleware
+from handlers.config_reader import config
 
 
 async def main() -> None:
-    load_dotenv()
-
     await create_table()
-    bot = Bot(getenv('bot_key'), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(config.bot_key.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
 
     dp.message.middleware(AntiFloodMiddleware())
@@ -37,7 +34,7 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
         format="[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s",
         )
-    
+
     try:
         run(main(), loop_factory=None)
     except KeyboardInterrupt:
