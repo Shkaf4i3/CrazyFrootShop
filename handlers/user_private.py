@@ -4,14 +4,14 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 import reply as kb
-from handlers.database import (
+from other_func.database import (
     get_count_sc,
     get_count_eg,
     add_user,
     get_count_balance,
     get_item_sc,
     get_item_eg)
-from handlers.classes_functions import Balance_state, check_invoice, cryptobot
+from other_func.classes_functions import Balance_state, check_invoice, cryptobot
 
 
 user_private_router = Router()

@@ -9,9 +9,9 @@ from aiogram.enums import ParseMode
 from handlers.user_private import user_private_router
 from handlers.admin_private import admin_private_router
 from cmd_list import private
-from handlers.database import create_table
-from handlers.classes_functions import CheckSubscribe, AntiFloodMiddleware
-from handlers.config_reader import config
+from other_func.database import create_table
+from other_func.classes_functions import CheckSubscribe, AntiFloodMiddleware
+from other_func.config_reader import config
 
 
 async def main() -> None:
@@ -36,6 +36,6 @@ if __name__ == "__main__":
         )
 
     try:
-        run(main(), loop_factory=None)
+        run(main())
     except KeyboardInterrupt:
         print('Exit')
