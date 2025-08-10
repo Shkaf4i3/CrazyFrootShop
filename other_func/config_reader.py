@@ -6,11 +6,7 @@ class Settings(BaseSettings):
     bot_key: SecretStr
     admin_id: str
     channel_id: str
-    host: str
-    port: int
-    dbname: str
-    user: str
-    password: str
+    dsn: str
     pay_key: str
     model_config: SettingsConfigDict = SettingsConfigDict(
         env_file='.env',

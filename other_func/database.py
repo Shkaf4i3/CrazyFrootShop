@@ -7,12 +7,10 @@ from other_func.config_reader import config
 from other_func.encrypt_db import encrypt_password, decrypt_password, get_crypto_key
 
 
-db_pool = ConnectionPool(password=config.password,
-                         db_name=config.dbname,
-                         username=config.user,
-                         host=config.host,
-                         port=config.port,
-                         max_db_pool_size=5)
+db_pool = ConnectionPool(
+    dsn=config.dsn,
+    max_db_pool_size=5,
+)
 
 
 # Создание базы данных с таблицами Social Club, Epic Games и Users
