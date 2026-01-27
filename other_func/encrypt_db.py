@@ -1,11 +1,16 @@
+from pathlib import Path
+
 from aiofiles import open
 from cryptography.fernet import Fernet
+
+PATH_TO_FILE = Path(__file__).parent.parent / "files"
+PATH_TO_FILE.mkdir(exist_ok=True)
 
 
 async def generate_crypto_key() -> bytes:
     key = Fernet.generate_key()
 
-    async with open(file=r"D:\Project\CrazyFrootShop\files\test.txt", mode="wb") as file:
+    async with open(file=PATH_TO_FILE / "test.txt", mode="wb") as file:
         await file.write(key)
 
 
@@ -13,7 +18,7 @@ async def generate_crypto_key() -> bytes:
 
 
 async def get_crypto_key() -> bytes:
-    async with open(file=r"D:\Project\CrazyFrootShop\files\test.txt", mode="rb") as file:
+    async with open(file=PATH_TO_FILE / "test.txt", mode="rb") as file:
         key = await file.read()
         return key
 
