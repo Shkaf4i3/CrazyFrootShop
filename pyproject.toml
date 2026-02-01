@@ -6,7 +6,7 @@ authors = [
     {name = "Shkaf4i3",email = "fleximes@protonmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13,<4.0"
+requires-python = ">=3.13,<3.15"
 dependencies = [
     "aiogram (>=3.22.0,<4.0.0)",
     "pydantic-settings (>=2.11.0,<3.0.0)",
@@ -15,6 +15,7 @@ dependencies = [
     "asyncpg (>=0.30.0,<0.31.0)",
     "cryptography (>=46.0.4,<47.0.0)",
     "aiocryptopay (>=0.4.8,<0.5.0)",
+    "aiofiles (>=25.1.0,<26.0.0)",
 ]
 
 

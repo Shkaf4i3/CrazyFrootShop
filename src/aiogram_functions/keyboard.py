@@ -14,7 +14,7 @@ def main_kb() -> ReplyKeyboardMarkup:
 
 def admin_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
-    builder.button(text="📕 Добавить товар 📕")
+    builder.button(text="📕 Добавить товары 📕")
     builder.button(text="👤 Список пользователей 👤")
     builder.button(text="✅ Рассылка всем пользователям бота ✅")
     builder.button(text="Вернуться в меню пользователя 👈")

@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, Document
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.exceptions import (
@@ -13,7 +13,7 @@ from aiogram.exceptions import (
 
 from ..aiogram_functions import IsAdmin, kb, Mailing, Account
 from ..service import UserService, AccountService
-from ..settings import settings
+from ..utils import handle_file_to_save_account
 
 
 router = Router()
@@ -117,12 +117,14 @@ async def send_mailing_message(message: Message, state: FSMContext, user_service
     await state.clear()
 
 
-@router.message(F.text == "📕 Добавить товар 📕")
+@router.message(F.text == "📕 Добавить товары 📕")
 async def get_account_for_saving(message: Message, state: FSMContext) -> None:
     await state.set_state(Account.account)
     await message.answer(
-        "Отправьте данные аккаунта в формате 'type_platform:login:password'\n"
-        "Доступные площадки для добавления - Social Club и Epic Games",
+        "Отправьте .txt файл со всеми аккаунтами, которые хотите добавить\n"
+        "Важно - в файле аккаунты должны быть в формате 'type_platform:login:password', разделенных на каждую строку\n"
+        "\n"
+        "Доступные площадки для добавления - Social Club и Epic Games. Используйте только их!",
         reply_markup=kb.cancel_saving(),
     )
 
@@ -144,35 +146,24 @@ async def cancel_saving_account(message: Message, state: FSMContext) -> None:
     await state.clear()
 
 
-@router.message(Account.account)
+@router.message(Account.account, F.document)
 async def save_account_in_db(
     message: Message,
     state: FSMContext,
     account_service: AccountService,
 ) -> None:
-    await state.update_data(account=message.text.split(sep=":"))
+    await state.update_data(file=message.document)
     data = await state.get_data()
-    account = data.get("account")
+    file: Document = data.get("file")
+    downloaded_file = await message.bot.download(file=file.file_id)
+    added_account, missed_account = await handle_file_to_save_account(
+        file=downloaded_file.read().decode().split(sep="\n"),
+        account_service=account_service,
+    )
 
-    if len(account) != 3:
-        await message.answer("Вы отправили данные в неправильном формате!")
-        return
-
-    if settings.available_platforms.get(account[0]) is None:
-        await message.answer("Вы указали недоступную платформу для работы!")
-        return
-
-    try:
-        saved_account = await account_service.save_account(
-            type_platform=account[0],
-            login=account[1],
-            password=account[2],
-        )
-        await message.answer(
-            f"Аккаунт {saved_account.id} сохранен",
-            reply_markup=kb.admin_kb(),
-        )
-    except KeyError as e:
-        await message.answer(text=str(e).replace("'", ""), reply_markup=kb.admin_kb())
-
+    await message.answer(
+        "✅ Сохранение аккаунтов завершено ✅\n"
+        f"Добавлено - {added_account}, пропущено - {missed_account}",
+        reply_markup=kb.admin_kb(),
+    )
     await state.clear()
