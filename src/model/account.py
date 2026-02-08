@@ -1,8 +1,7 @@
 from datetime import datetime, timezone
-from uuid import uuid4
 
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, TypeDecorator, DateTime
+from sqlalchemy import String, TypeDecorator, DateTime, UUID, func
 from cryptography.fernet import Fernet
 
 from ..model import Base
@@ -31,9 +30,7 @@ class EncryptedString(TypeDecorator):
 class Account(Base):
     __tablename__ = "Account"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, unique=True, default=lambda: str(uuid4()),
-    )
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, server_default=func.uuidv7())
     type_platform: Mapped[str] = mapped_column(String, nullable=False)
     login: Mapped[str] = mapped_column(String, nullable=False)
     password: Mapped[str] = mapped_column(EncryptedString(255), nullable=False)

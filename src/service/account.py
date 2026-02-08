@@ -11,8 +11,11 @@ class AccountService:
 
 
     @transactional
-    async def save_account(self, type_platform: str, login: str, password: str) -> AccountDto:
-        exists_account = await self.account_repo.get_account_by_login(login=login)
+    async def save_account(self, type_platform: str, login: str, password: str) -> None:
+        exists_account = await self.account_repo.get_account_by_login(
+            login=login,
+            type_platform=type_platform,
+        )
         if exists_account:
             raise KeyError(f"Аккаунт с айди {exists_account.id} уже существует")
 
@@ -21,8 +24,7 @@ class AccountService:
             login=login,
             password=password,
         )
-        saved_account = await self.account_repo.save_account(account=new_account)
-        return account_mappings.mapping_account(account=saved_account)
+        await self.account_repo.save_account(account=new_account)
 
 
     @transactional

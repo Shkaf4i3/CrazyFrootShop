@@ -32,8 +32,11 @@ class AccountRepo:
         return result.scalar()
 
 
-    async def get_account_by_login(self, login: str) -> Account | None:
-        stmt = select(Account).where(Account.login == login)
+    async def get_account_by_login(self, login: str, type_platform: str) -> Account | None:
+        stmt = select(Account).where(
+            Account.login == login,
+            Account.type_platform == type_platform,
+        )
         result = await self.session.execute(statement=stmt)
         return result.scalar()
 
