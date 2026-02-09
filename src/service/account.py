@@ -12,7 +12,7 @@ class AccountService:
 
     @transactional
     async def save_account(self, type_platform: str, login: str, password: str) -> None:
-        exists_account = await self.account_repo.get_account_by_login(
+        exists_account = await self.account_repo.get_account_by_login_and_platform_type(
             login=login,
             type_platform=type_platform,
         )
