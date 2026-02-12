@@ -2,7 +2,7 @@ from logging import getLogger
 from asyncio import sleep
 
 from aiogram import Router, F
-from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart, Command
 from aiocryptopay.exceptions.factory import CodeErrorFactory
@@ -205,7 +205,7 @@ async def get_info_about_platforms(callback: CallbackQuery) -> None:
 
     message_text = (
         type_platform +
-        "🧊 Аккаунт имеет бан в онлайне, но идеально подходит под сюжетку и игру на RP-серверах 🧊 \n"
+        "🧊 Аккаунт может иметь бан в онлайне, но идеально подходит под сюжетку и игру на RP-серверах 🧊 \n"
         "\n"
         "🍾 После покупки вы получаете 🍾: \n"
         "🖥 Данные от аккаунта и почты в формате mail:pass \n"

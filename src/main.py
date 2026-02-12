@@ -56,4 +56,5 @@ async def handle_webhook_update(
 
 
 if __name__ == "__main__":
-    run(app="main:app", reload=True)
+    # Хост 0.0.0.0 для доступа к сети docker-контейнера (порты проброшены в docker-compose.yaml)
+    run(app="main:app", reload=True, host="0.0.0.0", port=8000)

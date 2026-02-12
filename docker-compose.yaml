@@ -1,0 +1,35 @@
+services:
+  app:
+    env_file:
+        - .env
+    image: app
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    environment:
+      # Здесь можно указать webhook_url для контейнера, если необходимо его перезаписать
+      dsn: postgresql+asyncpg://postgres:password@pg/users
+    ports:
+      - "8000:8000"
+    depends_on:
+      pg:
+        condition: service_healthy
+
+  pg:
+    image: postgres
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d users"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
