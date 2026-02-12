@@ -70,4 +70,5 @@ def buy_account(type_platform: str) -> InlineKeyboardMarkup:
 def check_invoice() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text="Проверить платеж", callback_data="check_invoice")
+    builder.button(text="Отменить платеж", callback_data="cancel_top_up")
     return builder.as_markup()

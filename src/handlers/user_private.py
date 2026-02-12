@@ -150,6 +150,26 @@ async def proccess_top_up_balance(
         await state.clear()
 
 
+@router.callback_query(F.data == "cancel_top_up")
+async def cancel_top_up_balance(
+    callback: CallbackQuery,
+    state: FSMContext,
+) -> None:
+    data = await state.get_data()
+    invoice_id = data.get("invoice_id")
+    if invoice_id is None:
+        await callback.message.answer("Заявки на платеж не существует")
+        return
+
+    try:
+        await crypto_pay.delete_invoice(invoice_id=invoice_id)
+        await callback.message.answer("Вы успешно отменили платеж", reply_markup=kb.main_kb())
+        await state.clear()
+    except Exception as e:
+        await callback.message.answer("Не получилось удалить платеж, попробуйте еще раз")
+        logger.error("Произошла непредвиденная ошибка - %s", str(e))
+
+
 @router.callback_query(F.data == "check_invoice")
 async def check_invoice(callback: CallbackQuery, state: FSMContext, user_service: UserService) -> None:
     data = await state.get_data()
