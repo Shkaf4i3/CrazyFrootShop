@@ -4,6 +4,9 @@ from pydantic import SecretStr, PostgresDsn
 
 class Settings(BaseSettings):
     bot_token: SecretStr
+    redis_url: str
+    data_ttl: int
+    state_ttl: int
     webhook_url: str
     dsn: PostgresDsn
     admin_id: list[int]

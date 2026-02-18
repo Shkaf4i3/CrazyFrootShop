@@ -152,15 +152,12 @@ async def save_account_in_db(
     state: FSMContext,
     account_service: AccountService,
 ) -> None:
-    await state.update_data(file=message.document)
-    data = await state.get_data()
-    file: Document = data.get("file")
+    file = message.document
     downloaded_file = await message.bot.download(file=file.file_id)
     added_account, missed_account = await handle_file_to_save_account(
         file=downloaded_file.read().decode().split(sep="\n"),
         account_service=account_service,
     )
-
     await message.answer(
         "✅ Сохранение аккаунтов завершено ✅\n"
         f"Добавлено - {added_account}, пропущено - {missed_account}",
