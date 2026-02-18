@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     data_ttl: int
     state_ttl: int
     webhook_url: str
+    celery_broker: str
+    celery_backend: str
     dsn: PostgresDsn
     admin_id: list[int]
     admin_username: str

@@ -83,36 +83,18 @@ async def send_mailing_message(message: Message, state: FSMContext, user_service
         message.document.file_id if message.document else
         None
     )
-    available_users = await user_service.get_list_users()
+    message_type = (
+        "photo" if message.photo else
+        "document" if message.document else
+        "text"
+    )
 
-    for user in available_users:
-        try:
-            if user.tg_id in settings.admin_id:
-                continue
-            if message.photo:
-                await message.bot.send_photo(
-                    chat_id=user.tg_id,
-                    photo=message_media,
-                    caption=message_text,
-                )
-            elif message.document:
-                await message.bot.send_document(
-                    chat_id=user.tg_id,
-                    document=message_media,
-                    caption=message_text,
-                )
-            elif message.text:
-                await message.bot.send_message(
-                    chat_id=user.tg_id,
-                    text=message_text,
-                )
-        except (TelegramBadRequest, TelegramAPIError, TelegramForbiddenError, TelegramRetryAfter) as e:
-            logger.error(
-                "Ошибка отправки сообщения пользователю %s - %s",
-                user.tg_id,
-                str(e),
-            )
-
+    from ..utils import mailing_message_to_users
+    mailing_message_to_users.delay(
+        message_type=message_type,
+        message_text=message_text,
+        message_media=message_media,
+    )
     await message.answer(
         "❗️ Рассылка запущена ❗️",
         reply_markup=kb.admin_kb(),
