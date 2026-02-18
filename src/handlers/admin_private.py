@@ -14,6 +14,7 @@ from aiogram.exceptions import (
 from ..aiogram_functions import IsAdmin, kb, Mailing, Account
 from ..service import UserService, AccountService
 from ..utils import handle_file_to_save_account
+from ..settings import settings
 
 
 router = Router()
@@ -77,31 +78,33 @@ async def cancel_send_mailing(message: Message, state: FSMContext) -> None:
 @router.message(Mailing.mailing_message)
 async def send_mailing_message(message: Message, state: FSMContext, user_service: UserService) -> None:
     message_text = message.text if message.text or message.caption else None
-    message_media = message.photo[-1].file_id if message.photo or message.document.file_id else None
+    message_media = (
+        message.photo[-1].file_id if message.photo else
+        message.document.file_id if message.document else
+        None
+    )
     available_users = await user_service.get_list_users()
-
-    await state.update_data(mailing_message_text=message_text)
-    await state.update_data(mailing_message_media=message_media)
-    data = await state.get_data()
 
     for user in available_users:
         try:
+            if user.tg_id in settings.admin_id:
+                continue
             if message.photo:
                 await message.bot.send_photo(
                     chat_id=user.tg_id,
-                    photo=data.get("mailing_message_media"),
-                    caption=data.get("mailing_message_text"),
+                    photo=message_media,
+                    caption=message_text,
                 )
             elif message.document:
                 await message.bot.send_document(
                     chat_id=user.tg_id,
-                    document=data.get("mailing_message_media"),
-                    caption=data.get("mailing_message_text"),
+                    document=message_media,
+                    caption=message_text,
                 )
             elif message.text:
                 await message.bot.send_message(
                     chat_id=user.tg_id,
-                    text=data.get("mailing_message_text"),
+                    text=message_text,
                 )
         except (TelegramBadRequest, TelegramAPIError, TelegramForbiddenError, TelegramRetryAfter) as e:
             logger.error(
@@ -112,7 +115,7 @@ async def send_mailing_message(message: Message, state: FSMContext, user_service
 
     await message.answer(
         "❗️ Рассылка запущена ❗️",
-        reply_markup=kb.main_kb(),
+        reply_markup=kb.admin_kb(),
     )
     await state.clear()
 
