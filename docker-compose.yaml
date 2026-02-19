@@ -8,11 +8,60 @@ services:
       context: ./
     environment:
       dsn: postgresql+asyncpg://postgres:password@pg/users
+      redis_url: redis://default:password@redis:6379/0
+      celery_broker: redis://:password@redis:6379/0
+      celery_backend: redis://:password@redis:6379/0
     ports:
       - "8000:8000"
     depends_on:
       pg:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./redisdata:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    command: >
+      sh -c '
+        mkdir -p /usr/local/etc/redis &&
+        echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
+        echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
+        echo "appendfsync everysec" >> /usr/local/etc/redis/redis.conf &&
+        echo "user default on >password ~* &* +@all" > /usr/local/etc/redis/users.acl &&
+        redis-server /usr/local/etc/redis/redis.conf --aclfile /usr/local/etc/redis/users.acl
+      '
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "password", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+  celery:
+    env_file:
+        - .env
+    image: app
+    environment:
+      celery_broker: redis://:password@redis:6379/0
+      celery_backend: redis://:password@redis:6379/0
+      dsn: postgresql+asyncpg://postgres:password@pg/users
+    volumes:
+      - ./celery_data:/code
+    command: ["uv", "run", "celery", "-A", "src.utils.celery.celery", "worker", "--loglevel=info", "--pool=solo"]
 
   pg:
     image: postgres
@@ -23,7 +72,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql
+      - ./pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d users"]
       interval: 10s

@@ -11,6 +11,6 @@ COPY uv.lock pyproject.toml ./
 
 RUN uv sync --locked --no-install-project --no-dev
 
-COPY src .
+COPY src src
 
-CMD ["uv", "run", "fastapi", "run", "./main.py"]
+CMD ["uv", "run", "fastapi", "run", "./src/main.py"]

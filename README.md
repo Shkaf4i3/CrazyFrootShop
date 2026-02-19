@@ -7,7 +7,9 @@
 1) Создать новую БД PostgreSQL
 2) Настроить вебхуки (Ngrok или аналогичные сервисы)
 3) Создать новый .env файл (используя .env.example)
-4) Прописать в консоли `fastapi dev .\src\main.py`
+4) Запустить redis на локальной машине
+5) Запустить первый терминал и прописать `celery -A src.utils.celery.celery worker --loglevel=info --pool=solo`
+6) Запустить второй терминал и прописать `fastapi dev .\src\main.py`
 
 
 ## Запуск в Docker-контейнере
