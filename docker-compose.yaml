@@ -61,7 +61,7 @@ services:
       dsn: postgresql+asyncpg://postgres:password@pg/users
     volumes:
       - ./celery_data:/code
-    command: ["uv", "run", "celery", "-A", "src.utils.celery.celery", "worker", "--loglevel=info", "--pool=solo"]
+    command: ["uv", "run", "celery", "-A", "src.utils.celery.celery", "worker", "--loglevel=info"]
 
   pg:
     image: postgres
@@ -78,6 +78,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-volumes:
-  pgdata:
