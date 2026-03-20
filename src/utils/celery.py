@@ -2,7 +2,6 @@ from logging import getLogger
 from asyncio import get_event_loop
 
 from celery import Celery
-from aiogram.types import Message
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode

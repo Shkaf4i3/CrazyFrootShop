@@ -1,15 +1,10 @@
 from logging import getLogger
 
 from aiogram import Router, F
-from aiogram.types import Message, Document
+from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.exceptions import (
-    TelegramBadRequest,
-    TelegramForbiddenError,
-    TelegramRetryAfter,
-    TelegramAPIError,
-)
+
 
 from ..aiogram_functions import IsAdmin, kb, Mailing, Account
 from ..service import UserService, AccountService
