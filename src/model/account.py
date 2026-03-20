@@ -16,12 +16,12 @@ class EncryptedString(TypeDecorator):
     impl = String
     cache_ok = True
 
-    def process_bind_param(self, value, dialect):
+    def process_bind_param(self, value, dialect) -> str | None:
         if value is None:
             return value
         return fernet.encrypt(value.encode()).decode()
 
-    def process_result_value(self, value, dialect):
+    def process_result_value(self, value, dialect) -> str | None:
         if value is None:
             return value
         return fernet.decrypt(value.encode()).decode()

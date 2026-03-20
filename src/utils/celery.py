@@ -30,7 +30,7 @@ def mailing_message_to_users(
     message_type: str,
     message_text: str | None = None,
     message_media: str| None = None,
-):
+) -> None:
     async def start_mailing_message() -> None:
         async with Bot(
             token=settings.bot_token.get_secret_value(),

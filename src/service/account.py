@@ -5,7 +5,7 @@ from ..mappings import account_mappings
 
 
 class AccountService:
-    def __init__(self, unit_of_work: UnitOfWork, account_repo: AccountRepo):
+    def __init__(self, unit_of_work: UnitOfWork, account_repo: AccountRepo) -> None:
         self.unit_of_work = unit_of_work
         self.account_repo = account_repo
 
@@ -32,7 +32,6 @@ class AccountService:
         exists_account = await self.account_repo.get_account_by_id(id=id)
         if not exists_account:
             raise KeyError(f"Аккаунт с айди {id} не существует")
-
         await self.account_repo.delete_account(account=exists_account)
 
 
@@ -40,7 +39,6 @@ class AccountService:
         count_accounts = await self.account_repo.get_count_accounts(type_platform=type_platform)
         if not count_accounts:
             return 0
-
         return count_accounts
 
 
@@ -50,5 +48,4 @@ class AccountService:
         )
         if not exists_account:
             return None
-
         return account_mappings.mapping_account(account=exists_account)

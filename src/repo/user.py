@@ -5,7 +5,7 @@ from ..model import User
 
 
 class UserRepo:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
 

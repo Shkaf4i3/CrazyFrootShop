@@ -71,7 +71,7 @@ async def cancel_send_mailing(message: Message, state: FSMContext) -> None:
 
 
 @router.message(Mailing.mailing_message)
-async def send_mailing_message(message: Message, state: FSMContext, user_service: UserService) -> None:
+async def send_mailing_message(message: Message, state: FSMContext) -> None:
     message_text = message.text if message.text or message.caption else None
     message_media = (
         message.photo[-1].file_id if message.photo else

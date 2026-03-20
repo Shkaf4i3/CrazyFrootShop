@@ -5,7 +5,7 @@ from ..model import Account
 
 
 class AccountRepo:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
 
@@ -32,7 +32,11 @@ class AccountRepo:
         return result.scalar()
 
 
-    async def get_account_by_login_and_platform_type(self, login: str, type_platform: str) -> Account | None:
+    async def get_account_by_login_and_platform_type(
+        self,
+        login: str,
+        type_platform: str,
+    ) -> Account | None:
         stmt = select(Account).where(
             Account.login == login,
             Account.type_platform == type_platform,

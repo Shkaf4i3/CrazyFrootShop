@@ -119,10 +119,7 @@ async def get_amount(callback: CallbackQuery, state: FSMContext) -> None:
 
 
 @router.message(Balance.amount)
-async def proccess_top_up_balance(
-    message: Message,
-    state: FSMContext,
-) -> None:
+async def proccess_top_up_balance(message: Message, state: FSMContext) -> None:
     try:
         await state.update_data(amount=int(message.text))
         data = await state.get_data()
@@ -151,10 +148,7 @@ async def proccess_top_up_balance(
 
 
 @router.callback_query(F.data == "cancel_top_up")
-async def cancel_top_up_balance(
-    callback: CallbackQuery,
-    state: FSMContext,
-) -> None:
+async def cancel_top_up_balance(callback: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     invoice_id = data.get("invoice_id")
     if invoice_id is None:
@@ -171,7 +165,11 @@ async def cancel_top_up_balance(
 
 
 @router.callback_query(F.data == "check_invoice")
-async def check_invoice(callback: CallbackQuery, state: FSMContext, user_service: UserService) -> None:
+async def check_invoice(
+    callback: CallbackQuery,
+    state: FSMContext,
+    user_service: UserService,
+) -> None:
     data = await state.get_data()
     invoice_id = data.get("invoice_id")
     amount = data.get("amount")

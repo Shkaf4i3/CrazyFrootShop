@@ -5,7 +5,7 @@ from ..mappings import user_mappings
 
 
 class UserService:
-    def __init__(self, unit_of_work: UnitOfWork, user_repo: UserRepo):
+    def __init__(self, unit_of_work: UnitOfWork, user_repo: UserRepo) -> None:
         self.unit_of_work = unit_of_work
         self.user_repo = user_repo
 
@@ -15,7 +15,6 @@ class UserService:
         exists_user = await self.user_repo.get_user_by_tg_id(tg_id=tg_id)
         if exists_user:
             return
-
         new_user = User(tg_id=tg_id, tg_username=tg_username)
         await self.user_repo.save_user(user=new_user)
 
@@ -24,7 +23,6 @@ class UserService:
         exists_user = await self.user_repo.get_user_by_tg_id(tg_id=tg_id)
         if not exists_user:
             return None
-
         return user_mappings.mapping_user(user=exists_user)
 
 
@@ -34,7 +32,7 @@ class UserService:
 
 
     @transactional
-    async def update_balance_user(self, tg_id: int, amount: int, type_update: str) -> UserDto:
+    async def update_balance_user(self, tg_id: int, amount: int, type_update: str) -> None:
         exists_user = await self.user_repo.get_user_by_tg_id(tg_id=tg_id)
         if exists_user:
             if type_update == "plus":
