@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 from logging import getLogger
 
 from ..service import AccountService
@@ -9,7 +9,7 @@ logger = getLogger(__name__)
 
 
 async def handle_file_to_save_account(
-    file: list[str],
+    file: List[str],
     account_service: AccountService,
 ) -> Tuple[int, int]:
     added_accounts = 0

@@ -8,8 +8,7 @@ from aiogram.fsm.context import FSMContext
 
 from ..aiogram_functions import IsAdmin, kb, Mailing, Account
 from ..service import UserService, AccountService
-from ..utils import handle_file_to_save_account
-from ..settings import settings
+from ..utils import handle_file_to_save_account, mailing_message_to_users
 
 
 router = Router()
@@ -83,9 +82,7 @@ async def send_mailing_message(message: Message, state: FSMContext) -> None:
         "document" if message.document else
         "text"
     )
-
-    from ..utils import mailing_message_to_users
-    mailing_message_to_users.delay(
+    await mailing_message_to_users(
         message_type=message_type,
         message_text=message_text,
         message_media=message_media,

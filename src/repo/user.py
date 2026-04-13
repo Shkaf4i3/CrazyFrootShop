@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -22,7 +24,7 @@ class UserRepo:
         return result.scalar()
 
 
-    async def get_list_users(self) -> list[User]:
+    async def get_list_users(self) -> List[User]:
         stmt = select(User)
         result = await self.session.execute(statement=stmt)
         return result.scalars().all()

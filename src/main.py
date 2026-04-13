@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import Any, Annotated
+from typing import Any, Annotated, Dict
 from logging import basicConfig, INFO
 
 from fastapi import FastAPI, Depends
@@ -12,6 +12,7 @@ from .aiogram_functions import available_commands
 from .model import Base
 from .deps import services
 from .service import UserService, AccountService
+from .client import broker
 
 
 bot = create_bot()
@@ -25,7 +26,6 @@ async def lifespan(_: FastAPI):
         datefmt=r"%Y-%m-%d %H:%M:%S",
         format=r"[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s",
     )
-
     await bot.set_webhook(url=settings.webhook_url, drop_pending_updates=True)
     exists_commands = await bot.get_my_commands(scope=BotCommandScopeAllPrivateChats())
     if not exists_commands:
@@ -33,10 +33,11 @@ async def lifespan(_: FastAPI):
             commands=available_commands,
             scope=BotCommandScopeAllPrivateChats(),
         )
-
     async with db_manage.session_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    await broker.start()
     yield
+    await broker.stop()
     await bot.session.close()
 
 
@@ -45,11 +46,11 @@ app = FastAPI(lifespan=lifespan, docs_url="/", redoc_url=None)
 
 @app.post("/webhook")
 async def handle_webhook_update(
-    update: dict[str, Any],
+    update: Dict[str, Any],
     user_service: Annotated[UserService, Depends(services.get_user_service)],
     account_service: Annotated[AccountService, Depends(services.get_account_service)],
 ) -> None:
-    new_update = Update.model_validate(update, by_alias=True, by_name=True)
+    new_update = Update.model_validate(obj=update, by_alias=True, by_name=True)
     dp["user_service"] = user_service
     dp["account_service"] = account_service
     await dp.feed_update(bot=bot, update=new_update)

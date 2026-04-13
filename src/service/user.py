@@ -1,3 +1,5 @@
+from typing import List
+
 from ..repo import UnitOfWork, UserRepo, transactional
 from ..model import User
 from ..dto import UserDto
@@ -26,7 +28,7 @@ class UserService:
         return user_mappings.mapping_user(user=exists_user)
 
 
-    async def get_list_users(self) -> list[UserDto]:
+    async def get_list_users(self) -> List[UserDto]:
         exists_users = await self.user_repo.get_list_users()
         return [user_mappings.mapping_user(user=user) for user in exists_users]
 

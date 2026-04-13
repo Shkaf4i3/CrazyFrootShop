@@ -1,21 +1,19 @@
+from typing import Dict, List
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr, PostgresDsn
 
 
 class Settings(BaseSettings):
     bot_token: SecretStr
-    redis_url: str
-    data_ttl: int
-    state_ttl: int
     webhook_url: str
-    celery_broker: str
-    celery_backend: str
+    rabbitmq_url: str
     dsn: PostgresDsn
-    admin_id: list[int]
+    admin_ids: List[int]
     admin_username: str
     user_agreement: str
     fernet_key: str
-    available_platforms: dict[str, str]
+    available_platforms: Dict[str, str]
     crypto_bot_token: str
     model_config = SettingsConfigDict(
         env_file=".env",
