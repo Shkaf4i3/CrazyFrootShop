@@ -6,13 +6,12 @@ from fastapi import FastAPI, Depends
 from uvicorn import run
 from aiogram.types import Update, BotCommandScopeAllPrivateChats
 
-from .app import create_dispatcher, create_bot
+from .client import create_dispatcher, create_bot, broker
 from .settings import settings, db_manage
 from .aiogram_functions import available_commands
 from .model import Base
 from .deps import services
 from .service import UserService, AccountService
-from .client import broker
 
 
 bot = create_bot()
@@ -35,8 +34,10 @@ async def lifespan(_: FastAPI):
         )
     async with db_manage.session_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    broker.context.set_global(key="bot", v=bot)
     await broker.start()
     yield
+    broker.context.reset_global(key="bot")
     await broker.stop()
     await bot.session.close()
 

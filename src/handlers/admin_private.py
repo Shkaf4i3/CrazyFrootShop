@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 
 from ..aiogram_functions import IsAdmin, kb, Mailing, Account
 from ..service import UserService, AccountService
-from ..utils import handle_file_to_save_account, mailing_message_to_users
+from ..mailing import mailing_message_to_users
 
 
 router = Router()
