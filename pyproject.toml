@@ -3,15 +3,13 @@ name = "crazyfrootshop"
 version = "0.1.0"
 description = "Crazy Froot Shop Project"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
     "aiocryptopay>=0.4.8",
-    "aiogram>=3.25.0",
+    "aiogram>=3.27.0",
     "asyncpg>=0.31.0",
-    "celery[redis]>=5.3.1",
-    "cryptography>=46.0.5",
-    "fastapi[all]>=0.128.8",
-    "pydantic-settings>=2.12.0",
-    "redis>=7.2.0",
-    "sqlalchemy>=2.0.46",
+    "cryptography>=46.0.7",
+    "fastapi[all]>=0.135.3",
+    "faststream[rabbit]>=0.6.7",
+    "sqlalchemy>=2.0.49",
 ]
