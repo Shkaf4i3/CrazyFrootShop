@@ -2,6 +2,7 @@ from logging import getLogger
 from asyncio import sleep
 
 from faststream import Context
+from faststream.rabbit import RabbitQueue
 from aiogram import Bot
 from aiogram.exceptions import (
     TelegramRetryAfter,
@@ -12,12 +13,14 @@ from aiogram.exceptions import (
 
 from ..client import broker
 from ..dto import MailingTaskDto
+from .producer import direct_exchange
 
 
 logger = getLogger(name=__name__)
+mailing_queue = RabbitQueue(name="send-mailing", routing_key="tg_id")
 
 
-@broker.subscriber(queue="send-mailing")
+@broker.subscriber(queue=mailing_queue, exchange=direct_exchange)
 async def handle_mailing_message(
     task: MailingTaskDto,
     bot: Bot = Context("bot"),

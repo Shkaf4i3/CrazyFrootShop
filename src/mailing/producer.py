@@ -1,8 +1,16 @@
+from faststream.rabbit import RabbitExchange, ExchangeType
+
 from ..settings import db_manage, settings
 from ..repo import UnitOfWork, UserRepo
 from ..service import UserService
 from ..mappings import mailing_mappings
 from ..client import broker
+
+
+direct_exchange = RabbitExchange(
+    name="notifications",
+    type=ExchangeType.DIRECT,
+)
 
 
 async def mailing_message_to_users(
@@ -24,4 +32,4 @@ async def mailing_message_to_users(
                 message_text=message_text,
                 message_media=message_media,
             )
-            await broker.publish(message=task, queue="send-mailing")
+            await broker.publish(message=task, exchange=direct_exchange, routing_key="tg_id")
