@@ -10,6 +10,7 @@ from ..client import broker
 direct_exchange = RabbitExchange(
     name="notifications",
     type=ExchangeType.DIRECT,
+    durable=True,
 )
 
 
@@ -32,4 +33,9 @@ async def mailing_message_to_users(
                 message_text=message_text,
                 message_media=message_media,
             )
-            await broker.publish(message=task, exchange=direct_exchange, routing_key="tg_id")
+            await broker.publish(
+                message=task,
+                exchange=direct_exchange,
+                routing_key="tg_id",
+                persist=True,
+            )
