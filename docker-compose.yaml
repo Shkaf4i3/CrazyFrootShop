@@ -8,63 +8,41 @@ services:
       context: ./
     environment:
       dsn: postgresql+asyncpg://postgres:password@pg/users
-      redis_url: redis://default:password@redis:6379/0
-      celery_broker: redis://:password@redis:6379/0
-      celery_backend: redis://:password@redis:6379/0
+      rabbitmq_url: amqp://local:local@rabbitmq:5672/
     ports:
       - "8000:8000"
     depends_on:
       pg:
         condition: service_healthy
-      redis:
+      rabbitmq:
         condition: service_healthy
 
-  redis:
-    image: redis
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    restart: always
     ports:
-      - "6380:6379"
-    volumes:
-      - ./redisdata:/data
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
-    command: >
-      sh -c '
-        mkdir -p /usr/local/etc/redis &&
-        echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
-        echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
-        echo "appendfsync everysec" >> /usr/local/etc/redis/redis.conf &&
-        echo "user default on >password ~* &* +@all" > /usr/local/etc/redis/users.acl &&
-        redis-server /usr/local/etc/redis/redis.conf --aclfile /usr/local/etc/redis/users.acl
-      '
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "password", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    restart: unless-stopped
-    tty: true
-    stdin_open: true
-
-  celery:
-    env_file:
-        - .env
-    image: app
+      - 5672:5672
+      - 15672:15672
     environment:
-      celery_broker: redis://:password@redis:6379/0
-      celery_backend: redis://:password@redis:6379/0
-      dsn: postgresql+asyncpg://postgres:password@pg/users
+      RABBITMQ_DEFAULT_USER: local
+      RABBITMQ_DEFAULT_PASS: local
+    configs:
+      - source: rabbitmq-plugins
+        target: /etc/rabbitmq/enabled_plugins
     volumes:
-      - ./celery_data:/code
-    command: ["uv", "run", "celery", "-A", "src.utils.celery.celery", "worker", "--loglevel=info"]
+      - rabbitmq-lib:/var/lib/rabbitmq/
+      - rabbitmq-log:/var/log/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pg:
-    image: postgres
+    image: postgres:latest
+    container_name: postgresql
+    restart: always
     environment:
       POSTGRES_DB: users
       POSTGRES_USER: postgres
@@ -78,3 +56,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+volumes:
+  rabbitmq-lib:
+    driver: local
+  rabbitmq-log:
+    driver: local
+
+configs:
+  rabbitmq-plugins:
+    content: "[rabbitmq_management]."
