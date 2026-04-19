@@ -251,7 +251,7 @@ async def buy_account_by_type_platform(
     type_platform = data[2]
     exists_user = await user_service.get_user(tg_id=callback.from_user.id)
 
-    if exists_user and exists_user.balance >= 300:
+    if exists_user and exists_user.balance >= 600:
         try:
             if type_platform.startswith("social"):
                 available_account = await account_service.get_account_by_type_platform(
@@ -270,7 +270,7 @@ async def buy_account_by_type_platform(
 
             await user_service.update_balance_user(
                 tg_id=exists_user.tg_id,
-                amount=300,
+                amount=600,
                 type_update="minus",
             )
             await account_service.delete_account(id=available_account.id)

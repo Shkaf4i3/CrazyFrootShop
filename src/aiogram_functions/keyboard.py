@@ -45,8 +45,8 @@ def cancel_top_up() -> ReplyKeyboardMarkup:
 
 def available_platforms() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.button(text="Social club | GTA 5 | 300 RUB 💵", callback_data="social_club")
-    builder.button(text="Epic Games | GTA 5 | 300 RUB 💵", callback_data="epic_games")
+    builder.button(text="Social club | GTA 5 | 600 RUB 💵", callback_data="social_club")
+    builder.button(text="Epic Games | GTA 5 | 600 RUB 💵", callback_data="epic_games")
     builder.button(text="❌ Закрыть окно ❌", callback_data="close_window")
 
     return builder.adjust(1).as_markup()
