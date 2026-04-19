@@ -32,7 +32,7 @@ class Account(Base):
 
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, server_default=func.uuidv7())
     type_platform: Mapped[str] = mapped_column(String, nullable=False)
-    login: Mapped[str] = mapped_column(String, nullable=False)
+    login: Mapped[str] = mapped_column(EncryptedString(255), nullable=False)
     password: Mapped[str] = mapped_column(EncryptedString(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
